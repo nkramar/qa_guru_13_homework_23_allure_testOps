@@ -1,5 +1,8 @@
 package tests;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,8 @@ public class DemoWebShopUiTests extends TestBase {
 
   @Test
   @Tag("UI")
+  @Owner("nkramar")
+  @Feature("Authorization")
   @DisplayName("Authorize on DemoWebShop website (UI)")
   void loginTest() {
 
@@ -32,6 +37,9 @@ public class DemoWebShopUiTests extends TestBase {
 
   @Test
   @Tag("UI")
+  @Owner("nkramar")
+  @Story("New user registration")
+  @Feature("Registration")
   @DisplayName("Register new user on DemoWebShop website (UI)")
   void registrationTest() {
 

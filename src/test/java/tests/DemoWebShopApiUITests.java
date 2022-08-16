@@ -2,8 +2,12 @@
 package tests;
 
 import com.codeborne.selenide.WebDriverRunner;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 
@@ -17,102 +21,113 @@ import static io.restassured.RestAssured.given;
 
 
 public class DemoWebShopApiUITests extends TestBase {
-  @Tag("API")
+
   @Test
+  @Tags({@Tag("API"), @Tag("critical")})
+  @Owner("nkramar")
+  @Story("New user registration")
+  @Feature("Registration")
   @DisplayName("New user registration using (API+UI)")
   void userRegistrationTest() {
 
-    step("Open minimal content page", () ->
-            open(minPageUrl));
+    step("Open minimal content page", () -> {
+      open(minPageUrl);
+    });
 
-    step("Create user using API", () ->
+    step("Create user using API", () -> {
 
-            given()
-                    .filter(withCustomTemplates())
-                    .cookie(newUserData.requestVerificationTokenName,
-                            newUserData.requestVerificationTokenValue)
-                    .formParam(newUserData.requestVerificationTokenName,
-                            newUserData.requestVerificationTokenFormParamValue)
-                    .formParam("Gender", testData.genderAPI)
-                    .formParam("FirstName", testData.firstName)
-                    .formParam("LastName", testData.lastName)
-                    .formParam("Email", testData.email)
-                    .formParam("Password", testData.password)
-                    .formParam("ConfirmPassword", testData.confirmPassword)
-                    .formParam("register-button", "Register")
-                    .log().all()
-                    .when()
-                    .post(registerUrl)
-                    .then()
-                    .log().all()
-                    .statusCode(302));
+      given()
+              .filter(withCustomTemplates())
+              .cookie(newUserData.requestVerificationTokenName,
+                      newUserData.requestVerificationTokenValue)
+              .formParam(newUserData.requestVerificationTokenName,
+                      newUserData.requestVerificationTokenFormParamValue)
+              .formParam("Gender", testData.genderAPI)
+              .formParam("FirstName", testData.firstName)
+              .formParam("LastName", testData.lastName)
+              .formParam("Email", testData.email)
+              .formParam("Password", testData.password)
+              .formParam("ConfirmPassword", testData.confirmPassword)
+              .formParam("register-button", "Register")
+              .log().all()
+              .when()
+              .post(registerUrl)
+              .then()
+              .log().all()
+              .statusCode(302);
+    });
 
-    step("Open login URL", () ->
-            open(loginUrl));
-    step("Fill out login form", () ->
-            demoWebShopLoginPage.setLogin(testData.email));
-    demoWebShopLoginPage.setPassword(testData.password);
+    step("Open login URL", () -> {
+      open(loginUrl);
+    });
+    step("Fill out login form", () -> {
+      demoWebShopLoginPage.setLogin(testData.email);
+      demoWebShopLoginPage.setPassword(testData.password);
+    });
 
-    step("Check that new registered user can login via UI", () ->
-            demoWebShopLoginPage.shouldBeAuthorized(testData.email));
+    step("Check that new registered user can login via UI", () -> {
+      demoWebShopLoginPage.shouldBeAuthorized(testData.email);
+    });
 
   }
 
-@Tag("API")
   @Test
+  @Tag("API")
+  @Owner("nkramar")
+  @Story("Change user data")
+  @Feature("Change user info")
   @DisplayName("Change user data using API(UI)")
   void changeUserFirstName() {
-    step("Authorization with already existing user",
-            () -> {
-              String authorizationCookieValue = given()
-                      .filter(withCustomTemplates())
-                      .formParam("Email", login)
-                      .formParam("Password", password)
-                      .when()
-                      .post(loginUrl)
-                      .then()
-                      .statusCode(302)
-                      .extract().cookie(editUserData.authorizationCookieName);
+    step("Authorization with already existing user", () -> {
+      String authorizationCookieValue = given()
+              .filter(withCustomTemplates())
+              .formParam("Email", login)
+              .formParam("Password", password)
+              .when()
+              .post(loginUrl)
+              .then()
+              .statusCode(302)
+              .extract().cookie(editUserData.authorizationCookieName);
 
-              step("Changing user name via API",
-                      () -> {
-                        String newLocationUrl = given()
-                                .filter(withCustomTemplates())
-                                .cookie(
-                                        editUserData.authorizationCookieName,
-                                        authorizationCookieValue
-                                )
-                                .cookie(
-                                        editUserData.requestVerificationTokenName,
-                                        editUserData.requestVerificationTokenValue
-                                )
-                                .formParam(
-                                        editUserData.requestVerificationTokenName,
-                                        editUserData.requestVerificationTokenFormParamValue
-                                )
-                                .formParam("FirstName", testData.firstName)
-                                .formParam("LastName", testData.lastName)
-                                .formParam("Email", login)
-                                .when()
-                                .post(userInfoUrl)
-                                .then()
-                                .statusCode(302)
-                                .extract().header("Location");
-
-                        open(minPageUrl);
-                        WebDriverRunner.getWebDriver().manage().addCookie(new Cookie(
+      step("Changing user name via API",
+              () -> {
+                String newLocationUrl = given()
+                        .filter(withCustomTemplates())
+                        .cookie(
                                 editUserData.authorizationCookieName,
                                 authorizationCookieValue
-                        ));
+                        )
+                        .cookie(
+                                editUserData.requestVerificationTokenName,
+                                editUserData.requestVerificationTokenValue
+                        )
+                        .formParam(
+                                editUserData.requestVerificationTokenName,
+                                editUserData.requestVerificationTokenFormParamValue
+                        )
+                        .formParam("FirstName", testData.firstName)
+                        .formParam("LastName", testData.lastName)
+                        .formParam("Email", login)
+                        .when()
+                        .post(userInfoUrl)
+                        .then()
+                        .statusCode(302)
+                        .extract().header("Location");
 
-                        step("...Open user profile page",
-                                () -> open(newLocationUrl));
-                      });
+                open(minPageUrl);
+                WebDriverRunner.getWebDriver().manage().addCookie(new Cookie(
+                        editUserData.authorizationCookieName,
+                        authorizationCookieValue
+                ));
 
-              step("Checking changed user data",
-                      () -> editUserData.firstName.shouldHave(attribute("value", testData.firstName)));
-              editUserData.lastName.shouldHave(attribute("value", testData.lastName));
-            });
+                step("...Open user profile page",
+                        () -> open(newLocationUrl));
+              });
+
+      step("Checking changed user data",
+              () -> editUserData.firstName.shouldHave(attribute("value", testData.firstName)));
+      editUserData.lastName.shouldHave(attribute("value", testData.lastName));
+    });
   }
 }
 
