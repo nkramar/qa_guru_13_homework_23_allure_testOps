@@ -41,6 +41,10 @@ dependencies {
             "org.aeonbits.owner:owner:$ownerVersion",
             "com.github.javafaker:javafaker:$javaFakerVersion"
     )
+    implementation("commons-io:commons-io:2.6")
+    implementation("io.qameta.allure:allure-java-commons:2.14.0")
+    implementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+
 }
 
 tasks.withType(JavaCompile) {

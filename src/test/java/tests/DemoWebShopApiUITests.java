@@ -2,9 +2,7 @@
 package tests;
 
 import com.codeborne.selenide.WebDriverRunner;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Owner;
-import io.qameta.allure.Story;
+import io.qameta.allure.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
@@ -12,27 +10,24 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 
 import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static helpers.RestAssuredListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 
-
+@Layer("api")
 public class DemoWebShopApiUITests extends TestBase {
 
   @Test
   @Tags({@Tag("API"), @Tag("critical")})
+  @AllureId("11940")
   @Owner("nkramar")
-  @Story("New user registration")
   @Feature("Registration")
+  @Story("New user registration")
   @DisplayName("New user registration using (API+UI)")
   void userRegistrationTest() {
 
-    step("Open minimal content page", () -> {
-      open(minPageUrl);
-    });
+    step("Open minimal content page", () -> open(minPageUrl));
 
     step("Create user using API", () -> {
 
@@ -57,9 +52,7 @@ public class DemoWebShopApiUITests extends TestBase {
               .statusCode(302);
     });
 
-    step("Open login URL", () -> {
-      open(loginUrl);
-    });
+    step("Open login URL", () -> open(loginUrl));
     step("Fill out login form", () -> {
       demoWebShopLoginPage.setLogin(testData.email);
       demoWebShopLoginPage.setPassword(testData.password);
@@ -73,9 +66,10 @@ public class DemoWebShopApiUITests extends TestBase {
 
   @Test
   @Tag("API")
+  @AllureId("11941")
   @Owner("nkramar")
-  @Story("Change user data")
   @Feature("Change user info")
+  @Story("Change user data")
   @DisplayName("Change user data using API(UI)")
   void changeUserFirstName() {
     step("Authorization with already existing user", () -> {
@@ -89,7 +83,7 @@ public class DemoWebShopApiUITests extends TestBase {
               .statusCode(302)
               .extract().cookie(editUserData.authorizationCookieName);
 
-      step("Changing user name via API",
+      step("Change user name via API",
               () -> {
                 String newLocationUrl = given()
                         .filter(withCustomTemplates())
@@ -120,7 +114,7 @@ public class DemoWebShopApiUITests extends TestBase {
                         authorizationCookieValue
                 ));
 
-                step("...Open user profile page",
+                step("Open user profile page",
                         () -> open(newLocationUrl));
               });
 
